@@ -5,7 +5,6 @@ import (
 	"math"
 )
 
-//TODO 片方がnilだったときの処理について考える
 func alignmentDistance(sourceLayerNode *model.Node, targetLayerNode *model.Node) float64 {
 	var res float64 = 0
 
@@ -16,9 +15,6 @@ func alignmentDistance(sourceLayerNode *model.Node, targetLayerNode *model.Node)
 		tmpNode := sourceLayerNode
 		sourceLayerNode = targetLayerNode
 		targetLayerNode = tmpNode
-		//tmpLength := sourceLayerLength
-		//sourceLayerLength = targetLayerLength
-		//targetLayerLength = tmpLength
 	}
 
 	for lg := layerLengthGap; lg > 0; lg-- {
@@ -34,8 +30,7 @@ func alignmentDistance(sourceLayerNode *model.Node, targetLayerNode *model.Node)
 }
 
 func layerLength(leftmostNode *model.Node) int {
-	var length int
-
+	length := 0
 	for node := leftmostNode; node != nil; node = node.NextNode {
 		length++
 	}
