@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/chez-shanpu/repo2tree/model"
 	"io/ioutil"
@@ -9,10 +10,14 @@ import (
 )
 
 func main() {
-	var treeFilePaths [2]string
+	var treeFilePaths []string
 	var trees [2]*model.NodeInfo
 
-	// TODO コマンドライン引数からtreeFilePathsへ値の格納処理
+	flag.Parse()
+	treeFilePaths = flag.Args()
+	if len(treeFilePaths) != 2 {
+		log.Fatal("Number of argument is wrong.")
+	}
 	for key := range treeFilePaths {
 		trees[key] = readTreeJson(treeFilePaths[key])
 	}
