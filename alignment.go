@@ -6,7 +6,7 @@ import (
 )
 
 func alignmentDistance(sourceLayerNode *model.Node, targetLayerNode *model.Node) float64 {
-	var res float64 = 0
+	var dist float64 = 0
 
 	sourceLayerLength := layerLength(sourceLayerNode)
 	targetLayerLength := layerLength(targetLayerNode)
@@ -18,15 +18,15 @@ func alignmentDistance(sourceLayerNode *model.Node, targetLayerNode *model.Node)
 	}
 
 	for lg := layerLengthGap; lg > 0; lg-- {
-		res += nodeDataSum(sourceLayerNode)
+		dist += nodeDataSum(sourceLayerNode)
 		sourceLayerNode = sourceLayerNode.NextNode
 	}
 	for remainLength := targetLayerLength; remainLength > 0; remainLength-- {
-		res += math.Abs(nodeDataSum(sourceLayerNode) - nodeDataSum(targetLayerNode))
+		dist += math.Abs(nodeDataSum(sourceLayerNode) - nodeDataSum(targetLayerNode))
 		sourceLayerNode = sourceLayerNode.NextNode
 		targetLayerNode = targetLayerNode.NextNode
 	}
-	return res
+	return dist
 }
 
 func layerLength(leftmostNode *model.Node) int {
