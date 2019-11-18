@@ -5,36 +5,62 @@ import (
 	"math"
 )
 
-func alignmentDistance(sourceLayerNode *model.Node, targetLayerNode *model.Node) float64 {
+func layerAlignmentDistanceTotal(sourceLayerRootNode *model.Node, targetLayerRootNode *model.Node) (sum float64) {
+	sum = 0
+	sNode := sourceLayerRootNode
+	tNode := targetLayerRootNode
+	sum += alignmentDistance(sNode, tNode)
+	for sNode != nil || tNode != nil {
+		if (sNode != nil && sNode.ChildNode != nil) || (tNode != nil && tNode.ChildNode != nil) {
+			if sNode == nil {
+				sum += layerAlignmentDistanceTotal(nil, tNode.ChildNode)
+			} else if tNode == nil {
+				sum += layerAlignmentDistanceTotal(sNode.ChildNode, nil)
+			} else {
+				sum += layerAlignmentDistanceTotal(sNode.ChildNode, tNode.ChildNode)
+			}
+		}
+		if sNode != nil {
+			sNode = sNode.NextNode
+		}
+		if tNode != nil {
+			tNode = tNode.NextNode
+		}
+	}
+	return
+}
+
+// Calculate the total alignment distance for that layer
+func alignmentDistance(sourceLayerRootNode *model.Node, targetLayerRootNode *model.Node) float64 {
 	var dist float64 = 0
 
-	sourceLayerLength := layerLength(sourceLayerNode)
-	targetLayerLength := layerLength(targetLayerNode)
+	sourceLayerLength := layerLength(sourceLayerRootNode)
+	targetLayerLength := layerLength(targetLayerRootNode)
 	layerLengthGap := math.Abs(float64(sourceLayerLength - targetLayerLength))
 	if sourceLayerLength < targetLayerLength {
-		tmpNode := sourceLayerNode
-		sourceLayerNode = targetLayerNode
-		targetLayerNode = tmpNode
+		tmpNode := sourceLayerRootNode
+		sourceLayerRootNode = targetLayerRootNode
+		targetLayerRootNode = tmpNode
 	}
 
 	for lg := layerLengthGap; lg > 0; lg-- {
-		dist += nodeDataSum(sourceLayerNode)
-		sourceLayerNode = sourceLayerNode.NextNode
+		dist += nodeDataSum(sourceLayerRootNode)
+		sourceLayerRootNode = sourceLayerRootNode.NextNode
 	}
 	for remainLength := targetLayerLength; remainLength > 0; remainLength-- {
-		dist += math.Abs(nodeDataSum(sourceLayerNode) - nodeDataSum(targetLayerNode))
-		sourceLayerNode = sourceLayerNode.NextNode
-		targetLayerNode = targetLayerNode.NextNode
+		dist += math.Abs(nodeDataSum(sourceLayerRootNode) - nodeDataSum(targetLayerRootNode))
+		sourceLayerRootNode = sourceLayerRootNode.NextNode
+		targetLayerRootNode = targetLayerRootNode.NextNode
 	}
 	return dist
 }
 
-func layerLength(leftmostNode *model.Node) int {
-	length := 0
+func layerLength(leftmostNode *model.Node) (length int) {
+	length = 0
 	for node := leftmostNode; node != nil; node = node.NextNode {
 		length++
 	}
-	return length
+	return
 }
 
 func nodeDataSum(node *model.Node) (sum float64) {
